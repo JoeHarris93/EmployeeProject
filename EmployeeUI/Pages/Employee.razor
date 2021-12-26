@@ -1,0 +1,56 @@
+﻿@page "/"
+
+@inject IHttpClientFactory _clientFactory
+
+<h3>Employees</h3>
+
+@if (!string.IsNullOrWhiteSpace(errorString))
+{
+    <div class="h2">@errorString</div>
+}
+else if(employees is null)
+{
+    <div class="h4">Loading...</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Hire Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var emp in employees)
+            {
+                <tr>
+                    <td>@emp.FirstName</td>
+                    <td>@emp.LastName</td>
+                    <td>@emp.HireDate</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<EmployeesModel> employees;
+    string errorString;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = _clientFactory.CreateClient("EmployeesAPI");
+
+        try
+        {
+            employees = await client.GetFromJsonAsync<List<EmployeesModel>>("employees");
+            errorString = null;
+        }
+        catch(Exception ex)
+        {
+            errorString = ex.Message;
+        }
+    }
+}

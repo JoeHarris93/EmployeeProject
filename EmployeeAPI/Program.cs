@@ -24,10 +24,10 @@ app.MapGet("/api/employees", async (EmployeeContext db) => await db.Employees.In
 app.MapGet("/api/employees/{id}", async (EmployeeContext db, int id) => await db.Employees.FindAsync(id));
 
 // Get employees by first name
-app.MapGet("/api/employees/{firstname}", async (EmployeeContext db, string firstname) => await db.Employees.Where(e => e.FirstName.Contains(firstname)).ToListAsync());
+app.MapGet("/api/employees/firstname/{firstname}", async (EmployeeContext db, string firstname) => await db.Employees.Where(e => e.FirstName.Contains(firstname)).ToListAsync());
 
 // Get employees by last name
-app.MapGet("/api/employees/{lastname}", async (EmployeeContext db, string lastname) => await db.Employees.Where(e => e.LastName.Contains(lastname)).ToListAsync());
+app.MapGet("/api/employees/lastname/{lastname}", async (EmployeeContext db, string lastname) => await db.Employees.Where(e => e.LastName.Contains(lastname)).ToListAsync());
 
 // Create new employee
 app.MapPost("/api/employees", async (EmployeeContext db, Employee employee) =>
@@ -68,13 +68,13 @@ app.MapGet("/api/employeetasks", async (EmployeeContext db) => await db.Employee
 app.MapGet("/api/employeetasks/{id}", async (EmployeeContext db, int id) => await db.EmployeeTasks.FindAsync(id));
 
 // Get tasks by task name
-app.MapGet("/api/employeetasks/{taskname}", async (EmployeeContext db, string taskname) => await db.EmployeeTasks.Where(e => e.TaskName.Contains(taskname)).ToListAsync());
+app.MapGet("/api/employeetasks/taskname/{taskname}", async (EmployeeContext db, string taskname) => await db.EmployeeTasks.Where(e => e.TaskName.Contains(taskname)).ToListAsync());
 
 // Get tasks by start time
-app.MapGet("/api/employeetasks/{starttime}", async (EmployeeContext db, DateTimeOffset starttime) => await db.EmployeeTasks.Where(e => e.StartTime.Date == starttime.Date).ToListAsync());
+app.MapGet("/api/employeetasks/starttime/{starttime}", async (EmployeeContext db, DateTimeOffset starttime) => await db.EmployeeTasks.Where(e => e.StartTime.Date == starttime.Date).ToListAsync());
 
 // Get tasks by deadline
-app.MapGet("/api/employeetasks/{deadline}", async (EmployeeContext db, DateTimeOffset deadline) => await db.EmployeeTasks.Where(e => e.Deadline.Date == deadline.Date).ToListAsync());
+app.MapGet("/api/employeetasks/deadline/{deadline}", async (EmployeeContext db, DateTimeOffset deadline) => await db.EmployeeTasks.Where(e => e.Deadline.Date == deadline.Date).ToListAsync());
 
 // Create new task
 app.MapPost("/api/employeetasks", async (EmployeeContext db, EmployeeTask employeeTask) =>

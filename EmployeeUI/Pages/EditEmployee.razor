@@ -1,0 +1,78 @@
+﻿@page "/EditEmployee/{Id:int}"
+
+@inject IHttpClientFactory _clientFactory
+@inject NavigationManager NavigationManager
+
+<h3>EditEmployee</h3>
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="FirstName" class="control-label">First Name</label>
+                <input form="FirstName" class="form-control" @bind="@employees.FirstName" />
+                <label for="LastName" class="control-label">First Name</label>
+                <input form="LastName" class="form-control" @bind="@employees.LastName" />
+            </div>
+            <div class="form-group">
+                <label for="HireDate" class="control-label">Hire Date</label>
+                <input type="datetime-local" form="HireDate" class="form-control" @bind="@employees.HireDate" />
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-primary" @onclick="@UpdateEmployee" value="Update"/>
+                <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel"/>
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    EmployeesModel employees = new EmployeesModel();
+    string errorString;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = _clientFactory.CreateClient("EmployeesAPI");
+
+        try
+        {
+            employees = await client.GetFromJsonAsync<EmployeesModel>("employees/" + Id);
+            errorString = null;
+        }
+        catch(Exception ex)
+        {
+            errorString = ex.Message;
+        }
+    }
+
+    protected async void UpdateEmployee()
+    {
+        var client = _clientFactory.CreateClient("EmployeesAPI");
+
+        try
+        {
+            await client.PutAsJsonAsync<EmployeesModel>("employees/" + Id, employees);
+            errorString = null;
+            NavigationManager.NavigateTo("/");
+        }
+        catch(Exception ex)
+        {
+            errorString = ex.Message;
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

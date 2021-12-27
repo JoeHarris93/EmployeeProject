@@ -6,7 +6,7 @@ namespace EmployeeUI.Models
     {
         public int Id { get; set; }
 
-        public int EmployeeId { get; set; }
+        public int? EmployeeId { get; set; }
 
         [Required]
         public string TaskName { get; set; }
@@ -15,5 +15,7 @@ namespace EmployeeUI.Models
         public DateTimeOffset StartTime { get; set; }
 
         public DateTimeOffset Deadline { get; set; }
+
+        public EmployeesModel Employee { get; set; }
     }
 }

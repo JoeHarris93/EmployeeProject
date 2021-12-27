@@ -1,14 +1,14 @@
-﻿@page "/"
+﻿@page "/Tasks"
 
 @inject IHttpClientFactory _clientFactory
 
-<h3>Employees</h3>
+<h3>Tasks</h3>
 
 @if (!string.IsNullOrWhiteSpace(errorString))
 {
     <div class="h2">@errorString</div>
 }
-else if(employees is null)
+else if(employeeTasks is null)
 {
     <div class="h4">Loading...</div>
 }
@@ -17,38 +17,32 @@ else
     <table class="table table-striped">
         <thead class="thead-dark">
             <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Hire Date</th>
-                <th>Tasks</th>
+                <th>Task</th>
+                <th>Start Time</th>
+                <th>Deadline</th>
+                <th>Assigned To</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            @foreach(var emp in employees)
+            @foreach(var task in employeeTasks)
             {
                 <tr>
-                    <td>@emp.FirstName</td>
-                    <td>@emp.LastName</td>
-                    <td>@emp.HireDate</td>
-                    @if(@emp.Tasks is null || @emp.Tasks.Count == 0){
-                        <td>No Tasks</td>
+                    <td>@task.TaskName</td>
+                    <td>@task.StartTime</td>
+                    <td>@task.Deadline</td>
+                    @if(@task.EmployeeId is null){
+                        <td>Not Assigned</td>
                     }else{
                         <td>
-                            <select>
-                                <option selected>Assigned Tasks</option>
-                                <option>---</option>
-                            @foreach(var task in @emp.Tasks){
-                                <option>@task.TaskName</option>
-                            }
-                            </select>
+                            @task.Employee.FirstName @task.Employee.LastName
                         </td>
                     }
                     <td>
-                        <a class="btn btn-primary" href="EditEmployee/@emp.Id">
+                        <a class="btn btn-primary" href="EditTask/@task.Id">
                             <span class="oi oi-pencil" aria-hidden="true"> Edit</span>
                         </a>
-                        <a class="btn btn-primary" href="DeleteEmployee/@emp.Id">
+                        <a class="btn btn-primary" href="DeleteTask/@task.Id">
                             <span class="oi oi-delete" aria-hidden="true"> Delete</span>
                         </a>
                     </td>
@@ -59,6 +53,7 @@ else
 }
 
 @code {
+    List<EmployeeTasksModel> employeeTasks = new List<EmployeeTasksModel>();
     List<EmployeesModel> employees = new List<EmployeesModel>();
     string errorString;
 
@@ -68,7 +63,15 @@ else
 
         try
         {
+            employeeTasks = await client.GetFromJsonAsync<List<EmployeeTasksModel>>("employeetasks");
             employees = await client.GetFromJsonAsync<List<EmployeesModel>>("employees");
+            foreach(var task in employeeTasks)
+            {
+                if(task.EmployeeId is not null)
+                {
+                    task.Employee = employees.Where(w => w.Id.Equals(task.EmployeeId)).FirstOrDefault();
+                }
+            }
             errorString = null;
         }
         catch(Exception ex)

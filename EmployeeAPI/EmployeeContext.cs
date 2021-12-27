@@ -4,6 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EmployeeAPI
 {
+    /// <summary>
+    /// run the next line in the debeloper powershell to create the database and tables in local sql server
+    /// dotnet ef database update --project EmployeeAPI
+    /// </summary>
     public class EmployeeContext : DbContext
     {
         public EmployeeContext(DbContextOptions<EmployeeContext> options) : base(options)

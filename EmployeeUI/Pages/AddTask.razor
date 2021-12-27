@@ -1,0 +1,89 @@
+﻿@page "/AddTask"
+
+@inject IHttpClientFactory _clientFactory
+@inject NavigationManager NavigationManager
+
+<h3>Add Task</h3>
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="TaskName" class="control-label">Task Name</label>
+                <input form="TaskName" class="form-control" @bind="@task.TaskName" />
+            </div>
+            <div class="form-group">
+                <label for="StartTime" class="control-label">Start Time</label>
+                <input type="datetime-local" form="StartTime" class="form-control" @bind="@task.StartTime" />
+                <label for="Deadline" class="control-label">Deadline</label>
+                <input type="datetime-local" form="Deadline" class="form-control" @bind="@task.Deadline" />
+            </div>
+            <div class="form-group">
+                <label for="EmployeeId" class="control-label">Assign To</label>
+                <select class="form-select" @bind="@task.EmployeeId">
+                    @if(employees is null)
+                    {
+                        <option selected>No Employees to Select</option>
+                    }else{
+                        <option selected>Select Employee</option> 
+                        @foreach(var emp in employees)
+                        {
+                            <option value="@emp.Id">@emp.FirstName @emp.LastName</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-primary" @onclick="@CreateTask" value="Save"/>
+                <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel"/>
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+    EmployeeTasksModel task = new EmployeeTasksModel() { StartTime = DateTimeOffset.Now, Deadline = DateTimeOffset.Now };
+    List<EmployeesModel> employees = new List<EmployeesModel>();
+    string errorString;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = _clientFactory.CreateClient("EmployeesAPI");
+
+        try
+        {
+            employees = await client.GetFromJsonAsync<List<EmployeesModel>>("employees");
+            errorString = null;
+        }
+        catch(Exception ex)
+        {
+            errorString = ex.Message;
+        }
+    }
+
+    protected async void CreateTask()
+    {
+        var client = _clientFactory.CreateClient("EmployeesAPI");
+
+        try
+        {
+            await client.PostAsJsonAsync("employeetasks", task);
+            NavigationManager.NavigateTo("/Tasks");
+        }
+        catch(Exception ex)
+        {
+            errorString = ex.Message;
+            NavigationManager.NavigateTo("/Tasks");
+        }
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/Tasks");
+    }
+}
